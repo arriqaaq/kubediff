@@ -1,0 +1,107 @@
+# Default values for kubediff.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+# Extra annotations to pass to the kubediff pod
+extraAnnotations: {}
+# Priority class name for the pod
+priorityClassName: ""
+image:
+  registry: docker.io
+  repository: arriqaaq/kubediff
+  pullPolicy: IfNotPresent
+  ## default tag is appVersion from Chart.yaml. If you want to use
+  ## some other tag then it can be specified here
+  tag: v0.0.5
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Enable podSecurityPolicy to allow kubediff to run in restricted clusters
+podSecurityPolicy:
+  enabled: false
+
+# Configure securityContext to manage user Privileges in pods
+# set to run as a Non-Privileged user by default
+securityContext:
+  runAsUser: 101
+  runAsGroup: 101
+
+containerSecurityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+
+# set one of the log levels- info, warn, debug, error, fatal, panic
+logLevel: info
+
+config:
+  ## Resources you want to watch
+  resources:
+    - kind: v1/pods             # Name of the resource. Resource name must be in group/version/resource (G/V/R) format
+                                # resource name should be plural (e.g apps/v1/deployments, v1/pods)
+    - kind: v1/services
+    - kind: apps/v1/deployments
+    - kind: apps/v1/statefulsets
+    - kind: networking.k8s.io/v1beta1/ingresses
+    - kind: v1/nodes
+    - kind: v1/namespaces
+    - kind: v1/persistentvolumes
+    - kind: v1/persistentvolumeclaims
+    - kind: v1/configmaps
+    - kind: apps/v1/daemonsets
+    - kind: batch/v1/jobs
+    - kind: rbac.authorization.k8s.io/v1/roles
+    - kind: rbac.authorization.k8s.io/v1/rolebindings
+    - kind: rbac.authorization.k8s.io/v1/clusterrolebindings
+    - kind: rbac.authorization.k8s.io/v1/clusterroles
+
+  namespaces:
+    - all
+
+  # notifier settings
+  notifier:
+    slack:
+      enabled: false
+      channel: 'SLACK_CHANNEL'
+      token: 'SLACK_API_TOKEN'
+      title: 'kubediff event'
+    webhook:
+      enabled: false
+      url: 'WEBHOOK_URL'
+
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+rbac:
+  create: true
+  rules:
+    - apiGroups: ["*"]
+      resources: ["*"]
+      verbs: ["get", "watch", "list"]
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  #name:
+  # annotations for the service account
+  annotations: {}

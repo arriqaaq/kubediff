@@ -1,0 +1,111 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubediff
+---
+# Configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubediff-configmap
+  namespace: kubediff
+  labels:
+    app: kubediff
+data:
+  config.yaml: |
+    ## Resources you want to watch
+    resources:
+      - kind: v1/pods             # Name of the resource. Resource name must be in group/version/resource (G/V/R) format
+                                  # resource name should be plural (e.g apps/v1/deployments, v1/pods)
+      - kind: v1/services
+      - kind: apps/v1/deployments
+      - kind: apps/v1/statefulsets
+      - kind: networking.k8s.io/v1beta1/ingresses
+      - kind: v1/nodes
+      - kind: v1/namespaces
+      - kind: v1/persistentvolumes
+      - kind: v1/persistentvolumeclaims
+      - kind: v1/configmaps
+      - kind: apps/v1/daemonsets
+      - kind: batch/v1/jobs
+      - kind: rbac.authorization.k8s.io/v1/roles
+      - kind: rbac.authorization.k8s.io/v1/rolebindings
+      - kind: rbac.authorization.k8s.io/v1/clusterrolebindings
+      - kind: rbac.authorization.k8s.io/v1/clusterroles
+
+    namespaces:
+      - all
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubediff-sa
+  namespace: kubediff
+  labels:
+    app: kubediff
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubediff-clusterrole
+  labels:
+    app: kubediff
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubediff-clusterrolebinding
+  labels:
+    app: kubediff
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubediff-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: kubediff-sa
+  namespace: kubediff
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubediff
+  namespace: kubediff
+  labels:
+    component: controller
+    app: kubediff
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: controller
+      app: kubediff
+  template:
+    metadata:
+      labels:
+        component: controller
+        app: kubediff
+    spec:
+      serviceAccountName: kubediff-sa
+      containers:
+        - name: kubediff
+          image: "docker.io/arriqaaq/kubediff:v0.0.5"
+          imagePullPolicy: Always
+          args:
+            - --config=/config/
+          env:
+            - name: LOG_LEVEL
+              value: "info"
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/config"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: kubediff-configmap

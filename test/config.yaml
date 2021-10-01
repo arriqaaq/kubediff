@@ -1,0 +1,8 @@
+mode: watch
+resources:
+  - kind: v1/configmaps
+namespaces:
+  - all
+notifier:
+  noop:
+    enabled: true
