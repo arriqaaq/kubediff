@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/arriqaaq/kdiff/config"
-	"github.com/arriqaaq/kdiff/pkg/watcher"
+	"github.com/arriqaaq/kubediff/config"
+	"github.com/arriqaaq/kubediff/pkg/watcher"
 )
 
 var (

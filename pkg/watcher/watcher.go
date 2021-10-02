@@ -3,7 +3,8 @@ package watcher
 import (
 	"time"
 
-	"github.com/arriqaaq/kdiff/config"
+	"github.com/arriqaaq/kubediff/config"
+	"github.com/arriqaaq/kubediff/pkg/notify"
 )
 
 const (
@@ -25,7 +26,9 @@ func NewWatcher(cfg *config.Config) (*Watcher, error) {
 	if err != nil {
 		return nil, err
 	}
-	informer.AddEventHandler(getEventHandler(cfg.Mode))
+
+	notifier := notify.NewNotifierList(cfg)
+	informer.AddEventHandler(getEventHandler(cfg.Mode), notifier)
 
 	return &Watcher{client, informer}, nil
 }

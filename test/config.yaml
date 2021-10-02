@@ -4,3 +4,5 @@ resources:
 namespaces:
   - kuberhealthy
   - kube-system
+notifier:
+  noop: "yes"

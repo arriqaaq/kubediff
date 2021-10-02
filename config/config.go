@@ -19,6 +19,7 @@ type Config struct {
 	Mode       RunMode
 	Resources  []Resource
 	Namespaces []string
+	Notifier   Notifier
 }
 
 func (c *Config) init() {
@@ -44,6 +45,25 @@ func (c *Config) validate() error {
 
 type Resource struct {
 	Kind string
+}
+
+type Notifier struct {
+	Slack   Slack
+	Webhook Webhook
+	NoOp    string
+}
+
+// Slack contains slack configuration
+type Slack struct {
+	Enabled bool
+	Token   string
+	Channel string
+	Title   string
+}
+
+type Webhook struct {
+	Enabled bool
+	Url     string
 }
 
 // New returns new Config

@@ -3,14 +3,15 @@ package watcher
 import (
 	"time"
 
-	"github.com/arriqaaq/kdiff/config"
+	"github.com/arriqaaq/kubediff/config"
+	"github.com/arriqaaq/kubediff/pkg/notify"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/tools/cache"
 )
 
 type Informer interface {
-	AddEventHandler(handler eventHandler)
+	AddEventHandler(handler eventHandler, notifier notify.Notifier)
 	HasSynced() bool
 	Start(ch <-chan struct{})
 }
@@ -69,10 +70,10 @@ type multiResourceInformer struct {
 var _ Informer = &multiResourceInformer{}
 
 // AddEventHandler adds the handler to each namespaced informer
-func (i *multiResourceInformer) AddEventHandler(handler eventHandler) {
+func (i *multiResourceInformer) AddEventHandler(handler eventHandler, notifier notify.Notifier) {
 	for _, ki := range i.resourceToInformer {
 		for kind, informer := range ki {
-			informer.AddEventHandler(handler(kind))
+			informer.AddEventHandler(handler(kind, notifier))
 		}
 	}
 }

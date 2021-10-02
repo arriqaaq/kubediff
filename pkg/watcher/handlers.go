@@ -1,37 +1,45 @@
 package watcher
 
 import (
-	"github.com/arriqaaq/kdiff/config"
-	"github.com/arriqaaq/kdiff/pkg/log"
+	"github.com/arriqaaq/kubediff/config"
+	"github.com/arriqaaq/kubediff/pkg/event"
+	"github.com/arriqaaq/kubediff/pkg/log"
+	"github.com/arriqaaq/kubediff/pkg/notify"
 	"github.com/go-test/deep"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/tools/cache"
 )
 
-type eventHandler func(resourceType string) cache.ResourceEventHandlerFuncs
+const (
+	EventAdd    string = "EventAdd"
+	EventUpdate string = "EventUpdate"
+	EventDelete string = "EventDelete"
+)
 
-func watchHandler(resourceType string) cache.ResourceEventHandlerFuncs {
+type eventHandler func(resourceType string, notifier notify.Notifier) cache.ResourceEventHandlerFuncs
+
+func watchHandler(resourceType string, notifier notify.Notifier) cache.ResourceEventHandlerFuncs {
 
 	var handler cache.ResourceEventHandlerFuncs
 	handler.AddFunc = func(obj interface{}) {
 		log.WithField("resourceType", resourceType).WithField("obj", obj).Info("add event")
+		notifier.Handle(event.NewEvent(EventAdd, resourceType, obj, nil))
 	}
 	handler.UpdateFunc = func(old, new interface{}) {
 		log.WithField("resourceType", resourceType).WithField("old", old).WithField("new", new).Info("update event")
+		notifier.Handle(event.NewEvent(EventUpdate, resourceType, new, nil))
 	}
 	handler.DeleteFunc = func(obj interface{}) {
 		log.WithField("resourceType", resourceType).WithField("obj", obj).Info("delete event")
+		notifier.Handle(event.NewEvent(EventDelete, resourceType, obj, nil))
 	}
 	return handler
 }
 
-func diffHandler(resourceType string) cache.ResourceEventHandlerFuncs {
+func diffHandler(resourceType string, notifier notify.Notifier) cache.ResourceEventHandlerFuncs {
 
 	var handler cache.ResourceEventHandlerFuncs
-	handler.AddFunc = func(obj interface{}) {
-		log.WithField("resourceType", resourceType).WithField("obj", obj).Info("add event")
-	}
 	handler.UpdateFunc = func(old, new interface{}) {
 		oldObj := old.(*unstructured.Unstructured)
 		newObj := new.(*unstructured.Unstructured)
@@ -39,15 +47,13 @@ func diffHandler(resourceType string) cache.ResourceEventHandlerFuncs {
 		if !equality.Semantic.DeepEqual(old, new) {
 			diff := deep.Equal(oldObj, newObj)
 			log.WithField("resourceType", resourceType).WithField("diff", diff).Info("update event")
+			notifier.Handle(event.NewEvent(EventUpdate, resourceType, old, diff))
 		}
-	}
-	handler.DeleteFunc = func(obj interface{}) {
-		log.WithField("resourceType", resourceType).WithField("obj", obj).Info("delete event")
 	}
 	return handler
 }
 
-func noOpHandler(resourceType string) cache.ResourceEventHandlerFuncs {
+func noOpHandler(resourceType string, notifier notify.Notifier) cache.ResourceEventHandlerFuncs {
 
 	var handler cache.ResourceEventHandlerFuncs
 	handler.AddFunc = func(obj interface{}) {
