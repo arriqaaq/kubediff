@@ -21,7 +21,7 @@ func NewWatcher(cfg *config.Config) (*Watcher, error) {
 		return nil, err
 	}
 
-	informer, err := NewMultiResourceInformer(cfg, client, resyncPeriod)(kubeconfig)
+	informer, err := NewMultiResourceInformer(cfg, resyncPeriod)(client)
 	if err != nil {
 		return nil, err
 	}

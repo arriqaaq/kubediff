@@ -65,7 +65,7 @@ func noOpHandler(resourceType string) cache.ResourceEventHandlerFuncs {
 func getEventHandler(mode config.RunMode) eventHandler {
 	switch mode {
 	case config.DiffMode:
-		return noOpHandler
+		return diffHandler
 	default:
 		return watchHandler
 	}

@@ -5,9 +5,7 @@ import (
 
 	"github.com/arriqaaq/kdiff/config"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/dynamic/dynamicinformer"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -17,19 +15,15 @@ type Informer interface {
 	Start(ch <-chan struct{})
 }
 
-type NewInformerFunc func(config *rest.Config) (*multiResourceInformer, error)
+type NewInformerFunc func(client *Client) (*multiResourceInformer, error)
 
-func NewMultiResourceInformer(cfg *config.Config, client *Client, resyncPeriod time.Duration) NewInformerFunc {
-	return func(kubeConfig *rest.Config) (*multiResourceInformer, error) {
+func NewMultiResourceInformer(cfg *config.Config, resyncPeriod time.Duration) NewInformerFunc {
+	return func(client *Client) (*multiResourceInformer, error) {
 		informers := make(map[string]map[string]cache.SharedIndexInformer)
-		dynamicClient, err := dynamic.NewForConfig(kubeConfig)
-		if err != nil {
-			return nil, err
-		}
 
 		resources := make(map[string]schema.GroupVersionResource)
 		for _, r := range cfg.Resources {
-			gvr, err := getGVRFromResource(client.DiscoveryMapper, r.Kind)
+			gvr, err := getGVRFromResource(client.discoveryMapper, r.Kind)
 			if err != nil {
 				return nil, err
 			}
@@ -42,7 +36,7 @@ func NewMultiResourceInformer(cfg *config.Config, client *Client, resyncPeriod t
 
 			namespace := getNamespace(ns)
 			di := dynamicinformer.NewFilteredDynamicSharedInformerFactory(
-				dynamicClient,
+				client.dynamicClient,
 				resyncPeriod,
 				namespace,
 				nil,

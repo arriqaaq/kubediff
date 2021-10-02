@@ -9,9 +9,9 @@ import (
 )
 
 type Client struct {
-	DiscoveryClient *discovery.DiscoveryClient
-	DiscoveryMapper *restmapper.DeferredDiscoveryRESTMapper
-	DynamicClient   dynamic.Interface
+	discoveryClient *discovery.DiscoveryClient
+	discoveryMapper *restmapper.DeferredDiscoveryRESTMapper
+	dynamicClient   dynamic.Interface
 }
 
 func newClient(config *rest.Config) (*Client, error) {
