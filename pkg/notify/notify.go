@@ -36,7 +36,7 @@ func NewNotifierList(conf *config.Config) Notifier {
 	if conf.Notifier.Webhook.Enabled {
 		notifiers = append(notifiers, NewWebhook(conf))
 	}
-	if conf.Notifier.NoOp != "" {
+	if conf.Notifier.NoOp.Enabled {
 		notifiers = append(notifiers, NewNoOp(conf))
 	}
 

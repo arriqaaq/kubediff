@@ -50,7 +50,7 @@ type Resource struct {
 type Notifier struct {
 	Slack   Slack
 	Webhook Webhook
-	NoOp    string
+	NoOp    NoOp
 }
 
 // Slack contains slack configuration
@@ -64,6 +64,10 @@ type Slack struct {
 type Webhook struct {
 	Enabled bool
 	Url     string
+}
+
+type NoOp struct {
+	Enabled bool
 }
 
 // New returns new Config

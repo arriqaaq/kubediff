@@ -44,8 +44,8 @@ func NewMultiResourceInformer(cfg *config.Config, resyncPeriod time.Duration) Ne
 			)
 
 			for r, gvr := range resources {
-				if _, ok := informers[namespace]; !ok {
-					informers[namespace] = make(map[string]cache.SharedIndexInformer)
+				if _, ok := informers[ns]; !ok {
+					informers[ns] = make(map[string]cache.SharedIndexInformer)
 				}
 				informers[ns][r] = di.ForResource(gvr).Informer()
 			}

@@ -2,7 +2,7 @@ mode: watch
 resources:
   - kind: v1/configmaps
 namespaces:
-  - kuberhealthy
-  - kube-system
+  - all
 notifier:
-  noop: "yes"
+  noop:
+    enabled: true
