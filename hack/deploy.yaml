@@ -38,7 +38,6 @@ data:
       - all
 
 ---
-# serviceaccount
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -47,7 +46,6 @@ metadata:
   labels:
     app: kubediff
 ---
-# Source: kubediff/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -59,7 +57,6 @@ rules:
     resources: ["*"]
     verbs: ["get", "watch", "list"]
 ---
-# clusterrolebinding
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -75,7 +72,6 @@ subjects:
   name: kubediff-sa
   namespace: kubediff
 ---
-# deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
