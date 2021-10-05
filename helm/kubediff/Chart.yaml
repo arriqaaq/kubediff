@@ -1,7 +1,7 @@
 apiVersion: v1
 name: kubediff
-version: v0.0.6
-appVersion: v0.0.6
+version: v0.0.1
+appVersion: v0.0.1
 description: A kubernetes resource diff logger with the ability to send event notifications to webhook/slack.
 sources:
   - https://github.com/arriqaaq/kubediff
