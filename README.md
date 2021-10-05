@@ -1,5 +1,11 @@
 
-![Dashboard](kubediff.png)
+
+<p align="center">
+  <img src="kubediff.png">
+</p>
+
+# kubediff
+
 **kubediff** is a Kubernetes resource diff watcher, with the ability to send event notifications.
 
 [![asciicast](https://asciinema.org/a/6Hi2rnrJFjrfdG8SpNE7wy9m7.png)](https://asciinema.org/a/6Hi2rnrJFjrfdG8SpNE7wy9m7)
@@ -18,46 +24,6 @@ Usage:
 
 Flags:
   --config   configuration folder for kubediff
-
-```
-```
-$ kubediff --config=./test/
-
-{
-  "level": "info",
-  "msg": "add event",
-  "obj": {
-    "apiVersion": "v1",
-    "data": {
-      "ca.crt": "-----BEGIN CERTIFICATE----------END CERTIFICATE-----\n"
-    },
-    "kind": "ConfigMap",
-    "metadata": {
-      "creationTimestamp": "2021-09-27T11:07:22Z",
-      "managedFields": [
-        {
-          "apiVersion": "v1",
-          "fieldsType": "FieldsV1",
-          "fieldsV1": {
-            "f:data": {
-              ".": {},
-              "f:ca.crt": {}
-            }
-          },
-          "manager": "kube-controller-manager",
-          "operation": "Update",
-          "time": "2021-09-27T11:07:22Z"
-        }
-      ],
-      "name": "kube-root-ca.crt",
-      "namespace": "vdp-system-n5nkm",
-      "resourceVersion": "704",
-      "uid": "b531c44d-d624-4127-807e-dbc5c0203c35"
-    }
-  },
-  "resourceType": "v1/configmaps",
-  "time": "2021-10-03 10:43:06"
-}
 
 ```
 
@@ -112,6 +78,7 @@ resources:
   - kind: rbac.authorization.k8s.io/v1/clusterrolebindings
   - kind: rbac.authorization.k8s.io/v1/clusterroles
 
+# watch multiple namespaces (or use **all** to watch all namespaces) 
 namespaces:
   - all
 ```
@@ -127,3 +94,7 @@ $ go get -u github.com/arriqaaq/kubediff
 kubediff --config=./test/
 
 ```
+
+# Resources
+
+Read more on how it is implemented (here)[https://aly.arriqaaq.com/kubernetes-informers/]
