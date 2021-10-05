@@ -43,7 +43,7 @@ publish_release() {
 }
 
 update_chart_yamls $version
-# generate_changelog $version
+generate_changelog $version
 make release
 publish_release $version
 
