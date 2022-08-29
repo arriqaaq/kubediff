@@ -97,4 +97,4 @@ kubediff --config=./test/
 
 # Resources
 
-Read more on how it is implemented (here)[https://aly.arriqaaq.com/kubernetes-informers/]
+Read more on how it is implemented [here](https://aly.arriqaaq.com/kubernetes-informers/)
